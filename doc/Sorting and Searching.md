@@ -18,5 +18,29 @@
 
 ###  Heaps
 
-* *Partial Order*
-* 
+- *Partial Order*
+
+## Mergesort: Sorting by Divide-and-Conquer
+
+## Quicksort: Sorting by Randomization
+
+## Distribution Sort: Sorting via Bucketing
+
+## Binary Search and Related Algorithms
+
+## Divide-and-Conquer
+
+### Divide-and-Conquer Recurrences
+
+$$
+T(n) = aT(n/b) + f(n)
+$$
+
+
+
+
+
+
+
+
+

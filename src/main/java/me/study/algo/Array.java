@@ -3,7 +3,23 @@ package me.study.algo;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-public class Sorter {
+public class Array {
+
+    public static <T extends Comparable<T>> int binarySearch(T[] arr, T key) {
+        int lo = 0, hi = arr.length;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (arr[mid].equals(key)) {
+                return mid;
+            }
+            if (arr[mid].compareTo(key) < 0) {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+        return -1;
+    }
 
     // merge sort
     public static <T extends Comparable<T>> void mergeSort(T[] arr) {
