@@ -1,4 +1,4 @@
-package me.study.algo;
+package me.study.ds;
 
 public class TestHelper {
     static <T extends Comparable<T>> boolean isSorted(T[] arr) {

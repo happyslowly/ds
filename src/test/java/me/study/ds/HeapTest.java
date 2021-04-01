@@ -1,4 +1,4 @@
-package me.study.algo;
+package me.study.ds;
 
 import org.junit.Assert;
 import org.junit.Test;

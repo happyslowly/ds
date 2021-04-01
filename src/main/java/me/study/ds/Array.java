@@ -1,4 +1,4 @@
-package me.study.algo;
+package me.study.ds;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -69,10 +69,7 @@ public class Array {
     }
 
     public static <T extends Comparable<T>> void heapSort(T[] arr) {
-        Heap<T> heap = new Heap<>(arr.length);
-        for (T item : arr) {
-            heap.insert(item);
-        }
+        Heap<T> heap = new Heap<>(arr);
         for (int i = 0; i < arr.length; i++) {
             arr[i] = heap.extract();
         }

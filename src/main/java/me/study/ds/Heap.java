@@ -1,13 +1,35 @@
-package me.study.algo;
+package me.study.ds;
 
-public class Heap<T extends Comparable<T>> {
-    private final Object[] arr;
+import java.util.Comparator;
+
+public class Heap<T> {
+    private final Object[] data;
     private final int capacity;
     private int size;
+    private Comparator<T> comparator;
+
+    public Heap(int capacity, Comparator<T> comparator) {
+        this.capacity = capacity;
+        this.data = new Object[this.capacity];
+        this.comparator = comparator;
+    }
 
     public Heap(int capacity) {
-        this.capacity = capacity;
-        this.arr = new Object[this.capacity];
+        this(capacity, null);
+    }
+
+    public Heap(T[] arr, Comparator<T> comparator) {
+        this.comparator = comparator;
+        this.capacity = arr.length;
+        this.size = arr.length;
+        this.data = arr.clone();
+        for (int i = arr.length / 2; i >= 0; i--) {
+            bubbleDown(i);
+        }
+    }
+
+    public Heap(T[] arr) {
+        this(arr, null);
     }
 
     private int parent(int n) {
@@ -21,7 +43,7 @@ public class Heap<T extends Comparable<T>> {
         if (isFull()) {
             throw new IllegalStateException("Heap is full");
         }
-        arr[size] = item;
+        data[size] = item;
         bubbleUp(size);
         size++;
     }
@@ -29,8 +51,8 @@ public class Heap<T extends Comparable<T>> {
     @SuppressWarnings("unchecked")
     private void bubbleUp(int n) {
         int p = parent(n);
-        while (p != -1 && ((T) arr[n]).compareTo((T) arr[p]) < 0) {
-            swap(arr, p, n);
+        while (p != -1 && compare((T) data[n], (T) data[p]) < 0) {
+            swap(data, p, n);
             n = p;
             p = parent(n);
         }
@@ -38,7 +60,7 @@ public class Heap<T extends Comparable<T>> {
 
     private void bubbleDown(int n) {
         for (int min = getMinChild(n); n != min; n = min, min = getMinChild(n)) {
-            swap(arr, n, min);
+            swap(data, n, min);
         }
     }
 
@@ -47,7 +69,7 @@ public class Heap<T extends Comparable<T>> {
         if (isEmpty()) {
             throw new IllegalStateException("Heap is empty");
         }
-        return (T) arr[0];
+        return (T) data[0];
     }
 
     @SuppressWarnings("unchecked")
@@ -55,10 +77,10 @@ public class Heap<T extends Comparable<T>> {
         if (isEmpty()) {
             throw new IllegalStateException("Heap is empty");
         }
-        T top = (T) arr[0];
-        arr[0] = arr[size - 1];
+        T top = (T) data[0];
+        data[0] = data[size - 1];
         bubbleDown(0);
-        arr[--size] = null;
+        data[--size] = null;
         return top;
     }
 
@@ -82,14 +104,14 @@ public class Heap<T extends Comparable<T>> {
 
     @SuppressWarnings("unchecked")
     private int getMinChild(int n) {
-        T min = (T) arr[n];
+        T min = (T) data[n];
         int minIndex = n;
         for (int i = 0; i <= 1; i++) {
             int index = 2 * n + 1 + i;
             T value = get(index);
-            if (value != null && value.compareTo(min) < 0) {
+            if (value != null && compare(value, min) < 0) {
                 minIndex = index;
-                min = (T) arr[minIndex];
+                min = (T) data[minIndex];
             }
         }
         return minIndex;
@@ -97,7 +119,14 @@ public class Heap<T extends Comparable<T>> {
 
     @SuppressWarnings("unchecked")
     private T get(int index) {
-        return index >= size ? null : (T) arr[index];
+        return index >= size ? null : (T) data[index];
     }
 
+    @SuppressWarnings("unchecked")
+    private int compare(T a, T b) {
+        if (comparator != null) {
+            return comparator.compare(a, b);
+        }
+        return ((Comparable<T> ) a).compareTo(b);
+    }
 }

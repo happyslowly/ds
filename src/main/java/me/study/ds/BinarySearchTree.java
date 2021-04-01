@@ -1,27 +1,15 @@
-package me.study.algo;
+package me.study.ds;
 
 import java.util.function.Consumer;
 
 public class BinarySearchTree<T extends Comparable<T>> {
-    private TreeNode<T> root;
-    private int size;
+    protected BTNode<T> root;
 
-    public static class TreeNode<T> {
-        T item;
-        TreeNode<T> left;
-        TreeNode<T> right;
-        TreeNode<T> parent;
-
-        public TreeNode(T item) {
-            this.item = item;
-        }
-    }
-
-    public TreeNode<T> search(T item) {
+    public BTNode<T> search(T item) {
         return search(root, item);
     }
 
-    private TreeNode<T> search(TreeNode<T> r, T item) {
+    private BTNode<T> search(BTNode<T> r, T item) {
         if (r == null) {
             return null;
         }
@@ -36,30 +24,30 @@ public class BinarySearchTree<T extends Comparable<T>> {
         return search(r.right, item);
     }
 
-    public TreeNode<T> min() {
+    public BTNode<T> min() {
         return min(root);
     }
 
-    private TreeNode<T> min(TreeNode<T> r) {
+    protected BTNode<T> min(BTNode<T> r) {
         if (r == null) {
             return null;
         }
-        TreeNode<T> min = r;
+        BTNode<T> min = r;
         while (min.left != null) {
             min = min.left;
         }
         return min;
     }
 
-    public TreeNode<T> max() {
+    public BTNode<T> max() {
         return max(root);
     }
 
-    public TreeNode<T> max(TreeNode<T> r) {
+    protected BTNode<T> max(BTNode<T> r) {
         if (r == null) {
             return null;
         }
-        TreeNode<T> max = r;
+        BTNode<T> max = r;
         while (max.right != null) {
             max = max.right;
         }
@@ -70,7 +58,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
         traverse(root, func);
     }
 
-    private void traverse(TreeNode<T> r, Consumer<T> func) {
+    private void traverse(BTNode<T> r, Consumer<T> func) {
         if (r == null) {
             return;
         }
@@ -81,19 +69,17 @@ public class BinarySearchTree<T extends Comparable<T>> {
     }
 
     public void insert(T item) {
-        root = insert(root, item, null);
+        root = insert(root, item);
     }
 
-    private TreeNode<T> insert(TreeNode<T> r, T item, TreeNode<T> parent) {
+    protected BTNode<T> insert(BTNode<T> r, T item) {
         if (r == null) {
-            TreeNode<T> node = new TreeNode<>(item);
-            node.parent = parent;
-            return node;
+            return new BTNode<>(item);
         }
         if (item.compareTo(r.item) < 0) {
-            r.left = insert(r.left, item, r);
+            r.left = insert(r.left, item);
         } else {
-            r.right = insert(r.right, item, r);
+            r.right = insert(r.right, item);
         }
         return r;
     }
@@ -102,7 +88,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
         root = delete(root, item);
     }
 
-    private TreeNode<T> delete(TreeNode<T> r, T item) {
+    protected BTNode<T> delete(BTNode<T> r, T item) {
         if (r == null) {
             return null;
         }
@@ -117,7 +103,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
             if (r.right == null) {
                 return r.left;
             }
-            TreeNode<T> p = min(r.right);
+            BTNode<T> p = min(r.right);
             r.right = delete(r.right, p.item);
             r.item = p.item;
             return r;
@@ -131,8 +117,40 @@ public class BinarySearchTree<T extends Comparable<T>> {
         return r;
     }
 
-
     public boolean isEmpty() {
-        return size == 0;
+        return root == null;
+    }
+
+    public boolean isBalanced() {
+        return isBalanced(root).balanced;
+    }
+
+    private static class Info {
+        private final int height;
+        private final boolean balanced;
+
+        private Info(int height, boolean balanced) {
+            this.height = height;
+            this.balanced = balanced;
+        }
+    }
+
+    private Info isBalanced(BTNode<T> root) {
+        if (root == null) {
+            return new Info(-1, true);
+        }
+
+        Info li = isBalanced(root.left);
+        if (!li.balanced) {
+            return new Info(-1, false);
+        }
+
+        Info ri = isBalanced(root.right);
+        if (!ri.balanced) {
+            return new Info(-1, false);
+        }
+
+        return new Info(Math.max(li.height, ri.height) + 1,
+                Math.abs(li.height - ri.height) < 2);
     }
 }

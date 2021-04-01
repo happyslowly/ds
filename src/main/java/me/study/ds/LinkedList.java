@@ -1,4 +1,4 @@
-package me.study.algo;
+package me.study.ds;
 
 public class LinkedList<T> {
 
