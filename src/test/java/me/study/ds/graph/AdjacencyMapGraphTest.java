@@ -5,28 +5,47 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.stream.Collectors;
 
 public class AdjacencyMapGraphTest {
 
     @Test
     public void test() {
         Graph<Integer, Integer> g = new AdjacencyMapGraph<>(false);
-        g.insert(1, 2);
-        g.insert(1, 5);
-        g.insert(2, 5);
-        g.insert(2, 4);
-        g.insert(5, 4);
-        g.insert(2, 3);
-        g.insert(3, 4);
+        g.insert(0, 1);
+        g.insert(0, 2);
+        g.insert(0, 6);
+        g.insert(0, 5);
+        g.insert(6, 4);
+        g.insert(4, 3);
+        g.insert(4, 5);
+        g.insert(3, 5);
+        g.insert(7, 8);
+        g.insert(9, 10);
+        g.insert(9, 11);
+        g.insert(9, 12);
+        g.insert(11, 12);
 
-        Assert.assertEquals(5, g.getNumVertices());
-        Assert.assertEquals(7, g.getNumEdges());
+//        Assert.assertEquals(13, g.getNumVertices());
+//        Assert.assertEquals(13, g.getNumEdges());
+//
+//        Assert.assertEquals(Collections.emptyList(), Graphs.findShortestPath(g, 1, 8));
+//        Assert.assertEquals(Arrays.asList(1, 0, 5, 3), Graphs.findShortestPath(g, 1, 3));
+//
+//        Assert.assertEquals(3,
+//                new HashSet<>(Graphs.connectedComponents(g).values()).size());
+        Assert.assertTrue(Graphs.hasCycle(g));
+    }
 
-        Assert.assertEquals(Collections.emptyList(), Graphs.findPath(g, 1, 8));
-        Assert.assertEquals(Arrays.asList(1, 2, 3), Graphs.findPath(g, 1, 3));
+    @Test
+    public void test2() {
+        Graph<String, String> g = new AdjacencyMapGraph<>(false);
+        g.insert("a", "b");
+        g.insert("b", "c");
+        g.insert("c", "a");
 
-        Assert.assertEquals(1, Graphs.connectedComponents(g));
-        Assert.assertFalse(Graphs.twoColors(g));
+        System.out.println(Graphs.hasCycle(g));
     }
 
 }

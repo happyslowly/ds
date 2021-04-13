@@ -13,7 +13,7 @@ public class Graphs {
         Set<V> discovered = new HashSet<>();
         final boolean[] canTwoColors = {true};
 
-        GraphTraversal<V, E> bfs = new AbstractBfsTraversal<V, E>(g) {
+        GraphTraversal<V, E> bfs = new BfsTraversal<V, E>(g) {
             @Override
             void preProcessVertex(V v) {
                 discovered.add(v);
@@ -47,73 +47,68 @@ public class Graphs {
         return canTwoColors[0];
     }
 
-    public static <V, E> int connectedComponents(Graph<V, E> g) {
-        Set<V> discovered = new HashSet<>();
-        GraphTraversal<V, E> bfs = new AbstractBfsTraversal<V, E>(g) {
-            @Override
-            void preProcessVertex(V v) {
-                discovered.add(v);
-            }
-
-            @Override
-            void postProcessVertex(V v) {
-
-            }
-
-            @Override
-            void processEdge(V u, V v) {
-
-            }
-        };
-
-        int c = 0;
-        for (V u : g.getVertices()) {
-            if (!discovered.contains(u)) {
-                c++;
-                bfs.traverse(u);
+    public static <V, E> Map<V, Integer> connectedComponents(Graph<V, E> g) {
+        ComponentsFinder<V, E> componentsFinder = new ComponentsFinder<>(g, 0);
+        for (V v : g.getVertices()) {
+            if (!componentsFinder.components.containsKey(v)) {
+                componentsFinder.count++;
+                componentsFinder.traverse(v);
             }
         }
-        return c;
+        return componentsFinder.components;
     }
 
-    public static <V, E> List<V> findPath(Graph<V, E> g, V start, V end) {
-        PathFinder<V, E> finder = new PathFinder<>(g);
-        finder.traverse(start);
-        if (!finder.vertices.contains(end)) {
+    public static <V, E> List<V> findShortestPath(Graph<V, E> g, V start, V end) {
+        BfsTraversal<V, E> bfs = new BfsTraversal<>(g);
+        bfs.traverse(start);
+        if (!bfs.marked.contains(end)) {
             return Collections.emptyList();
         }
         V p = end;
         Deque<V> stack = new ArrayDeque<>();
         stack.push(p);
-        while ((p = finder.parents.get(p)) != null) {
+        while ((p = bfs.parents.get(p)) != null) {
             stack.push(p);
         }
         return new ArrayList<>(stack);
     }
 
-    private static class PathFinder<V, E> extends AbstractBfsTraversal<V, E> {
-        private final Map<V, V> parents;
-        private final Set<V> vertices;
+    public static <V, E> boolean hasCycle(Graph<V, E> g) {
+        CycleDetector<V, E> detector = new CycleDetector<>(g);
+        for (V v : g.getVertices()) {
+            if (!detector.marked.contains(v)) {
+                detector.traverse(v);
+            }
+        }
+        return detector.hasCycle;
+    }
 
-        public PathFinder(Graph<V, E> g) {
+    private static class ComponentsFinder<V, E> extends DfsTraversal<V, E> {
+        private int count;
+        private final Map<V, Integer> components;
+        public ComponentsFinder(Graph<V, E> g, int count) {
             super(g);
-            parents = new HashMap<>();
-            vertices = new HashSet<>();
+            this.count = count;
+            this.components = new HashMap<>();
         }
 
         @Override
         void preProcessVertex(V v) {
-            vertices.add(v);
+            components.put(v, count);
         }
+    }
 
-        @Override
-        void postProcessVertex(V v) {
-
+    private static class CycleDetector<V, E> extends DfsTraversal<V, E> {
+        private boolean hasCycle = false;
+        public CycleDetector(Graph<V, E> g) {
+            super(g);
         }
 
         @Override
         void processEdge(V u, V v) {
-            parents.put(v, u);
+            if (marked.contains(v) && parents.get(v) != u) {
+                hasCycle = true;
+            }
         }
     }
 

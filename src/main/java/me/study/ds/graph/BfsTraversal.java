@@ -1,14 +1,27 @@
 package me.study.ds.graph;
 
 import java.util.ArrayDeque;
-import java.util.HashSet;
 import java.util.Queue;
-import java.util.Set;
 
-abstract class AbstractBfsTraversal<V, E> extends AbstractGraphTraversal<V, E> {
+class BfsTraversal<V, E> extends AbstractGraphTraversal<V, E> {
 
-    public AbstractBfsTraversal(Graph<V, E> g) {
+    public BfsTraversal(Graph<V, E> g) {
         super(g);
+    }
+
+    @Override
+    void preProcessVertex(V v) {
+
+    }
+
+    @Override
+    void postProcessVertex(V v) {
+
+    }
+
+    @Override
+    void processEdge(V u, V v) {
+
     }
 
     @Override
@@ -17,23 +30,22 @@ abstract class AbstractBfsTraversal<V, E> extends AbstractGraphTraversal<V, E> {
         if (vertex != null) {
             queue.offer(vertex);
         }
-        Set<V> visited = new HashSet<>();
-        Set<V> processed = new HashSet<>();
-        visited.add(vertex);
+        marked.add(vertex);
         while (!queue.isEmpty()) {
             V u = queue.poll();
-            processed.add(u);
             preProcessVertex(u);
             for (V v : g.getEdges(u)) {
-                if (!processed.contains(v)) {
+                if (!processed.contains(v) || g.isDirected()) {
                     processEdge(u, v);
                 }
-                if (!visited.contains(v)) {
-                    visited.add(v);
+                if (!marked.contains(v)) {
+                    marked.add(v);
+                    parents.put(v, u);
                     queue.offer(v);
                 }
             }
             postProcessVertex(u);
+            processed.add(u);
         }
     }
 
